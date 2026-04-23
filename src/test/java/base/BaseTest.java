@@ -2,6 +2,7 @@ package base;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.AfterMethod;
 import utils.ConfigReader;
@@ -19,11 +20,21 @@ public class BaseTest {
         String browser = ConfigReader.getBrowser();
 
         if (browser.equalsIgnoreCase("chrome")) {
-            WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver();
-        }
 
-        driver.manage().window().maximize();
+            WebDriverManager.chromedriver().setup();
+
+            ChromeOptions options = new ChromeOptions();
+
+            // ✅ CI FIX (IMPORTANT)
+            if (ConfigReader.isHeadless()) {
+                options.addArguments("--headless=new");
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-dev-shm-usage");
+                options.addArguments("--disable-gpu");
+            }
+
+            driver = new ChromeDriver(options);
+        }
 
         driver.manage().timeouts()
                 .implicitlyWait(Duration.ofSeconds(ConfigReader.getImplicitWait()));
@@ -33,7 +44,7 @@ public class BaseTest {
 
     @AfterMethod
     public void tearDown() {
-        if (driver != null) {   // 🔥 important fix
+        if (driver != null) {
             driver.quit();
         }
     }
