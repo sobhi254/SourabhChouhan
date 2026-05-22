@@ -1,23 +1,10 @@
 # QA Automation Framework
 
-## 🔧 Tech Stack
-- Java 21
-- Selenium WebDriver
-- TestNG
-- Maven
-- Extent Reports
+Starting again from scratch with Selenium, Java, Maven, and TestNG.
 
-## 📁 Framework Features
-- Page Object Model (POM)
-- Config-driven execution (config.properties)
-- Cross-browser support
-- Screenshot on failure
-- Extent Reports integration
-- TestNG listeners
-
-## ▶️ How to Run
-
-Run via Maven:
-
-```bash
-mvn clean test
+Current status:
+- Maven project is ready.
+- Selenium dependency is ready.
+- TestNG dependency is ready.
+- WebDriverManager dependency is ready.
+- Old framework structure has been removed.

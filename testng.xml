@@ -1,8 +1,11 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="QA Suite">
-    <test name="Login Tests">
+    <suite name="Suite" parallel="methods" thread-count="2">
+    <test name="XPath and CSS Practice">
         <classes>
-            <class name="tests.LoginTest"/>
+            <class name="tests.WebFormTest"/>
         </classes>
     </test>
+    <listeners>
+        <listener class-name="listeners.TestListener"/>
+    </listeners>
 </suite>

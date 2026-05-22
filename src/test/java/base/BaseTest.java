@@ -1,51 +1,61 @@
 package base;
 
+import listeners.TestListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.BeforeMethod;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
+import pages.WebFormPage;
 import utils.ConfigReader;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import utils.ElementUtil;
 
 import java.time.Duration;
 
+@Listeners(TestListener.class)
 public class BaseTest {
 
+    private static final Logger logger = LogManager.getLogger(BaseTest.class);
+    private static final ThreadLocal<WebDriver> DRIVER = new ThreadLocal<>();
+    private static final ThreadLocal<WebDriverWait> WAIT = new ThreadLocal<>();
+
     protected WebDriver driver;
+    protected WebDriverWait wait;
 
     @BeforeMethod
     public void setup() {
+        logger.info("Starting test setup");
+        driver = DriverFactory.initDriver();
+        DRIVER.set(driver);
+        wait = new WebDriverWait(driver,
+                Duration.ofSeconds(Integer.parseInt(ConfigReader.get("timeout"))));
+        WAIT.set(wait);
+        logger.info("Test setup completed");
+    }
 
-        String browser = ConfigReader.getBrowser();
+    protected WebDriver getDriver() {
+        return DRIVER.get();
+    }
 
-        if (browser.equalsIgnoreCase("chrome")) {
+    protected WebDriverWait getWait() {
+        return WAIT.get();
+    }
 
-            WebDriverManager.chromedriver().setup();
-
-            ChromeOptions options = new ChromeOptions();
-
-            // ✅ CI FIX (IMPORTANT)
-            if (ConfigReader.isHeadless()) {
-                options.addArguments("--headless=new");
-                options.addArguments("--no-sandbox");
-                options.addArguments("--disable-dev-shm-usage");
-                options.addArguments("--disable-gpu");
-            }
-
-            driver = new ChromeDriver(options);
-        }
-
-        driver.manage().timeouts()
-                .implicitlyWait(Duration.ofSeconds(ConfigReader.getImplicitWait()));
-
-        driver.get(ConfigReader.getUrl());
+    protected WebFormPage getPage() {
+        return new WebFormPage(new ElementUtil(getDriver(), getWait()));
     }
 
     @AfterMethod
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
+        WebDriver currentDriver = getDriver();
+        if (currentDriver != null) {
+            logger.info("Closing browser");
+            currentDriver.quit();
         }
+        DRIVER.remove();
+        WAIT.remove();
+        logger.info("Test teardown completed");
     }
 }

@@ -1,7 +1,7 @@
 package listeners;
 
-import com.aventstack.extentreports.ExtentReports;
-import com.aventstack.extentreports.ExtentTest;
+import base.DriverFactory;
+import com.aventstack.extentreports.*;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -15,32 +15,40 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestStart(ITestResult result) {
-        TEST.set(EXTENT.createTest(result.getMethod().getMethodName()));
+        TEST.set(EXTENT.createTest(result.getName()));
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        TEST.get().pass("Test passed");
+        TEST.get().pass("Test Passed");
+        TEST.remove();
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
+
+        String path = ScreenshotUtil.captureScreenshot(
+                DriverFactory.getDriver(),
+                result.getName()
+        );
+
         TEST.get().fail(result.getThrowable());
 
-        String screenshotPath = ScreenshotUtil.capture(result.getMethod().getMethodName());
-        if (screenshotPath != null) {
-            TEST.get().addScreenCaptureFromPath(screenshotPath);
+        if (path != null) {
+            TEST.get().addScreenCaptureFromPath(path);
         }
+
+        TEST.remove();
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
         TEST.get().skip(result.getThrowable());
+        TEST.remove();
     }
 
     @Override
     public void onFinish(ITestContext context) {
         EXTENT.flush();
-        TEST.remove();
     }
 }
