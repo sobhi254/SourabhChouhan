@@ -1,45 +1,39 @@
 package tests;
 
 import base.BaseTest;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import pages.WebFormPage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import pages.WebFormPage;
+import utils.ExcelUtil;
 
 public class WebFormTest extends BaseTest {
 
     private static final Logger logger = LogManager.getLogger(WebFormTest.class);
 
-    @Test(enabled=true)
-    public void testFormSubmission() {
-
-        logger.info("Starting testFormSubmission");
-        WebFormPage page = getPage();
-        page.open();
-
-        page.fillForm("Sourabh", "password123", "Learning Selenium");
-        page.selectOption("Two");
-        page.clickCheckbox();
-        page.submitForm();
-
-        Assert.assertEquals(page.getMessage(), "Form submitted");
-        logger.info("Finished testFormSubmission");
+    @DataProvider(name = "formData")
+    public Object[][] getData() {
+        return ExcelUtil.readSheet(
+                "src/test/resources/testdata/webform-data.xlsx",
+                "webform"
+        );
     }
 
-    @Test(enabled = true)
-    public void testFormSubmission2() {
+    @Test(dataProvider = "formData")
+    public void testFormSubmission(String user, String password, String message, String option) {
 
-        logger.info("Starting testFormSubmission2");
+        logger.info("Starting testFormSubmission for user: {}", user);
         WebFormPage page = getPage();
         page.open();
 
-        page.fillForm("Sourabh2", "password123", "Learning Selenium");
-        page.selectOption("Two");
+        page.fillForm(user, password, message);
+        page.selectOption(option);
         page.clickCheckbox();
         page.submitForm();
 
         Assert.assertEquals(page.getMessage(), "Form submitted");
-        logger.info("Finished testFormSubmission2");
+        logger.info("Finished testFormSubmission for user: {}", user);
     }
 }

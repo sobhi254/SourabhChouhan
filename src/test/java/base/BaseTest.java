@@ -49,11 +49,7 @@ public class BaseTest {
 
     @AfterMethod
     public void tearDown() {
-        WebDriver currentDriver = getDriver();
-        if (currentDriver != null) {
-            logger.info("Closing browser");
-            currentDriver.quit();
-        }
+        DriverFactory.quitDriver();
         DRIVER.remove();
         WAIT.remove();
         logger.info("Test teardown completed");

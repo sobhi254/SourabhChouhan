@@ -1,4 +1,8 @@
 target/
+out/
+reports/
+screenshots/
+.jenkins-local/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
