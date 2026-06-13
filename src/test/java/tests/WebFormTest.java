@@ -34,6 +34,6 @@ public class WebFormTest extends BaseTest {
         page.submitForm();
 
         Assert.assertEquals(page.getMessage(), "Form submitted");
-        logger.info("Finished testFormSubmission for user: {}", user);
+        logger.info("Finishedd testFormSubmission for user: {}", user);
     }
 }
